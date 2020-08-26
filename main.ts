@@ -2,9 +2,8 @@
 // dir: 0 -> forward, 1 -> backword
 // speed: 0~255 (PWM value control motor speed)
 function motorun (id: number, dir: number, speed: number) {
-    let mcu_addr = 16
     let i2cbuf = pins.createBuffer(3)
-if (id == 0) {
+    if (id == 0) {
         i2cbuf[0] = 0
         i2cbuf[1] = dir
         i2cbuf[2] = speed
@@ -21,12 +20,17 @@ if (id == 0) {
         i2cbuf[1] = dir
         i2cbuf[2] = speed
         pins.i2cWriteBuffer(mcu_addr, i2cbuf)
-i2cbuf[0] = 2
+        i2cbuf[0] = 2
         pins.i2cWriteBuffer(mcu_addr, i2cbuf)
     }
 }
-function readIR(SensorIDs: number):number {
-    let mcu_addr = 16
+function readIR(SensorIDs: number): number {
+    pins.i2cWriteNumber(
+        mcu_addr, 
+        SensorIDs + 3, 
+        NumberFormat.Int8LE,
+        false 
+    )
     return pins.i2cReadNumber(mcu_addr, NumberFormat.UInt16BE, false)
 }
 
@@ -41,4 +45,5 @@ input.onButtonPressed(Button.AB, function () {
 input.onButtonPressed(Button.B, function () {
     motorun(0, 0, 50)
 })
-let mcu_i2c_addr = 0
+
+let mcu_addr = 0x16
